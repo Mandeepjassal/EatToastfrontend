@@ -17,7 +17,7 @@ import Deletecategory from "./components/admin/Deletecategory";
 
 import Updateproduct from "./components/admin/Updateproduct";
 import Deleteproduct from "./components/admin/Deleteproduct";
-
+import NoPage from "./components/admin/NoPage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
@@ -43,6 +43,7 @@ function App() {
 
         <Route path="/deleteProduct/:id" element={<Deleteproduct />} />
         <Route path="Index" element={<Index />} />
+        <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>
   );

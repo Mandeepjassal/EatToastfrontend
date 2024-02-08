@@ -5,6 +5,23 @@ import { FETCH_ALL_CATEGORIES } from "../../graphql/FetchCatQuery";
 import { INSERT_PRODUCTS_MUTATION } from "../../graphql/InsertProcMutation";
 
 function Products() {
+  const [showCategorySubMenu, setShowCategorySubMenu] = useState(false);
+  const [showItemsSubMenu, setShowItemsSubMenu] = useState(false);
+  const [showOrdersSubMenu, setShowOrdersSubMenu] = useState(false);
+
+  const handleManageCategoryClick = (event) => {
+    event.preventDefault();
+    setShowCategorySubMenu(!showCategorySubMenu);
+  };
+
+  const handleManageItemsClick = (event) => {
+    event.preventDefault();
+    setShowItemsSubMenu(!showItemsSubMenu);
+  };
+  const handleManageOrdersClick = (event) => {
+    event.preventDefault();
+    setShowOrdersSubMenu(!showOrdersSubMenu);
+  };
   const navigate = useNavigate();
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState(0);
@@ -38,14 +55,10 @@ function Products() {
     return errors.length === 0;
   };
 
- 
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-        
-
       createProducts({
         variables: {
           productInput: {
@@ -58,11 +71,8 @@ function Products() {
         },
       });
 
-      
-
       navigate("/Products");
       alert(`Successful`);
-   
     }
   };
 

@@ -3,27 +3,44 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { FETCH_ALL_CATEGORIES } from "../../graphql/FetchCatQuery";
 import { Link } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 
 function Viewcategory() {
-  const [showCategorySubMenu, setShowCategorySubMenu] = useState(false);
-  const [showItemsSubMenu, setShowItemsSubMenu] = useState(false);
-  const [showOrdersSubMenu, setShowOrdersSubMenu] = useState(false);
-
-  const handleManageCategoryClick = (event) => {
-    event.preventDefault();
-    setShowCategorySubMenu(!showCategorySubMenu);
-  };
-
-  const handleManageItemsClick = (event) => {
-    event.preventDefault();
-    setShowItemsSubMenu(!showItemsSubMenu);
-  };
-  const handleManageOrdersClick = (event) => {
-    event.preventDefault();
-    setShowOrdersSubMenu(!showOrdersSubMenu);
-  };
   const { loading, error, data } = useQuery(FETCH_ALL_CATEGORIES);
   const [search, setSearch] = useState("");
+  const [currentPage, setcurrentPage] = useState(2);
+  const [itemsPerPage, setItemPerPage] = useState(8);
+  const totaItems = data?.getAllCategory_db.length;
+  const allItems = data?.getAllCategory_db;
+  const lastItemIndex = currentPage * itemsPerPage;
+  const firstItemIndex = lastItemIndex - itemsPerPage;
+  console.log("firstItemIndex " + firstItemIndex);
+  console.log("lastItemIndex " + lastItemIndex);
+
+  let pages = [];
+
+  for (let i = 1; i <= Math.ceil(totaItems / itemsPerPage); i++) {
+    pages.push(i);
+  }
+
+  const results = [];
+  results.totaItems = totaItems;
+  results.pageCount = Math.ceil(totaItems / itemsPerPage);
+  if (lastItemIndex < totaItems) {
+    results.next = {
+      currentPage: currentPage + 1,
+    };
+  }
+  if (firstItemIndex > 0) {
+    results.prev = {
+      currentPage: currentPage - 1,
+    };
+  }
+
+  const currentItems = data?.getAllCategory_db.slice(
+    firstItemIndex,
+    lastItemIndex
+  );
   //   if (loading)
   //     return (
   //       <h2>
@@ -44,6 +61,11 @@ function Viewcategory() {
     localStorage.setItem("id", _id);
     localStorage.setItem("category_name", category_name);
   };
+
+  function handlePageClick(e) {
+    console.log(e);
+  }
+
   return (
     <>
       <div className="container">
@@ -65,74 +87,59 @@ function Viewcategory() {
                 </span>
               </a>
             </li>
-            <li className="manage-category">
-              <a href="#" onClick={handleManageCategoryClick}>
-                <span className="icon">
+
+            <li>
+              <a href="#">
+                <span class="icon">
                   <ion-icon name="fast-food-outline"></ion-icon>
                 </span>
-                <span className="title">Manage Category</span>
+                <span class="title">
+                  <a href="/Addcategory">Add Category</a>
+                </span>
               </a>
             </li>
-            {showCategorySubMenu && (
-              <>
-                <ul>
-                  <li>
-                    <a href="/Addcategory">
-                      <span className="title">Add Category</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/Viewcategory">
-                      <span className="title">View Category</span>
-                    </a>
-                  </li>
-                </ul>
-              </>
-            )}
-            <li className="manage-items">
-              <a href="#" onClick={handleManageItemsClick}>
-                <span className="icon">
+
+            <li>
+              <a href="#">
+                <span class="icon">
                   <ion-icon name="restaurant"></ion-icon>
                 </span>
-                <span className="title">Manage Items</span>
+                <span class="title">
+                  <a href="/Additems">Add Items</a>
+                </span>
               </a>
             </li>
-            {showItemsSubMenu && (
-              <>
-                <ul>
-                  <li>
-                    <a href="/Additems">
-                      <span className="title">Add Items</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/Viewproduct">
-                      <span className="title">View Product</span>
-                    </a>
-                  </li>
-                </ul>
-              </>
-            )}
-            <li className="manage-orders">
-              <a href="#" onClick={handleManageOrdersClick}>
-                <span className="icon">
+
+            <li>
+              <a href="#">
+                <span class="icon">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </span>
+                <span class="title">
+                  <a href="/Viewproduct">View Product</a>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="icon">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </span>
+                <span class="title">
+                  <a href="/Viewcategory">View Categories</a>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="icon">
                   <ion-icon name="cart-outline"></ion-icon>
                 </span>
-                <span className="title">Manage Orders</span>
+                <span class="title">
+                  <a href="/Vieworders">View Order</a>
+                </span>
               </a>
             </li>
-            {showOrdersSubMenu && (
-              <>
-                <ul>
-                  <li>
-                    <a href="/Vieworders">
-                      {" "}
-                      <span className="title">View Order</span>
-                    </a>
-                  </li>
-                </ul>
-              </>
-            )}
 
             <li>
               <a href="#">
@@ -181,7 +188,7 @@ function Viewcategory() {
                 </thead>
 
                 <tbody>
-                  {data?.getAllCategory_db
+                  {currentItems
                     .filter((cat) => {
                       return search.toLocaleLowerCase() === ""
                         ? cat
@@ -214,6 +221,24 @@ function Viewcategory() {
                     ))}
                 </tbody>
               </table>
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={8}
+                previousLabel="< previous"
+                renderOnZeroPageCount={null}
+                marginPagesDisplayed={2}
+                containerClassName="pagination justify-content-center"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                activeClassName="active"
+              />
             </div>
           </div>
         </div>

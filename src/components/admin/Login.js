@@ -1,6 +1,79 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { LOGIN_MUTATION } from "../../graphql/LoginMutation";
 
 function Login() {
+  const [showCategorySubMenu, setShowCategorySubMenu] = useState(false);
+  const [showItemsSubMenu, setShowItemsSubMenu] = useState(false);
+  const [showOrdersSubMenu, setShowOrdersSubMenu] = useState(false);
+
+  const handleManageCategoryClick = (event) => {
+    event.preventDefault();
+    setShowCategorySubMenu(!showCategorySubMenu);
+  };
+
+  const handleManageItemsClick = (event) => {
+    event.preventDefault();
+    setShowItemsSubMenu(!showItemsSubMenu);
+  };
+  const handleManageOrdersClick = (event) => {
+    event.preventDefault();
+    setShowOrdersSubMenu(!showOrdersSubMenu);
+  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [usertype, setUsertype] = useState("ADMIN");
+  const [errorMessages, setErrorMessages] = useState([]);
+  const navigate = useNavigate();
+
+  const [checkExistingUser] = useMutation(LOGIN_MUTATION);
+  const validateForm = () => {
+    const errors = [];
+
+    if (!email) {
+      errors.push("Email field is required");
+    }
+    if (!password) {
+      errors.push("Password is required");
+    }
+    if (!usertype || usertype === "") {
+      errors.push("Usertype is required");
+    }
+
+    setErrorMessages(errors);
+    return errors.length === 0;
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      try {
+        const { data } = await checkExistingUser({
+          variables: { email, password, usertype },
+        });
+
+        if (data.checkExistingUser) {
+          localStorage.setItem("loginData", JSON.stringify(data));
+
+          navigate("/Dashboard");
+        }
+      } catch (error) {
+        if (error.message.includes("User not found")) {
+          setErrorMessages([
+            `User notfound, please enter the right credentials or signup `,
+          ]);
+        }
+
+        if (error.message.includes("Invalid password")) {
+          setErrorMessages([`Invalid password, try again `]);
+        }
+        return;
+      }
+    }
+  };
+
   return (
     <>
       <div class="container ">
@@ -22,50 +95,74 @@ function Login() {
                 </span>
               </a>
             </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
+            <li className="manage-category">
+              <a href="#" onClick={handleManageCategoryClick}>
+                <span className="icon">
                   <ion-icon name="fast-food-outline"></ion-icon>
                 </span>
-                <span class="title">
-                  <a href="/Addcategory">Add Category</a>
-                </span>
+                <span className="title">Manage Category</span>
               </a>
             </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
+            {showCategorySubMenu && (
+              <>
+                <ul>
+                  <li>
+                    <a href="/Addcategory">
+                      <span className="title">Add Category</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/Viewcategory">
+                      <span className="title">View Category</span>
+                    </a>
+                  </li>
+                </ul>
+              </>
+            )}
+            <li className="manage-items">
+              <a href="#" onClick={handleManageItemsClick}>
+                <span className="icon">
                   <ion-icon name="restaurant"></ion-icon>
                 </span>
-                <span class="title">
-                  <a href="/Additems">Add Items</a>
-                </span>
+                <span className="title">Manage Items</span>
               </a>
             </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
-                  <ion-icon name="eye-outline"></ion-icon>
-                </span>
-                <span class="title">
-                  <a href="/Viewproduct">View Product</a>
-                </span>
-              </a>
-            </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
+            {showItemsSubMenu && (
+              <>
+                <ul>
+                  <li>
+                    <a href="/Additems">
+                      <span className="title">Add Items</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/Viewproduct">
+                      <span className="title">View Product</span>
+                    </a>
+                  </li>
+                </ul>
+              </>
+            )}
+            <li className="manage-orders">
+              <a href="#" onClick={handleManageOrdersClick}>
+                <span className="icon">
                   <ion-icon name="cart-outline"></ion-icon>
                 </span>
-                <span class="title">
-                  <a href="/Vieworders">View Order</a>
-                </span>
+                <span className="title">Manage Orders</span>
               </a>
             </li>
+            {showOrdersSubMenu && (
+              <>
+                <ul>
+                  <li>
+                    <a href="/Vieworders">
+                      {" "}
+                      <span className="title">View Order</span>
+                    </a>
+                  </li>
+                </ul>
+              </>
+            )}
 
             <li>
               <a href="#">
@@ -78,7 +175,7 @@ function Login() {
               </a>
             </li>
           </ul>
-        </div>{" "}
+        </div>
       </div>
 
       <div class="row justify-content-center">
@@ -87,31 +184,68 @@ function Login() {
             <div class="card-header p-3">
               <h4>Login</h4>
             </div>
+
             <div class="card-body">
-              <form method="post" action="">
+              {errorMessages.length > 0 && (
+                <div style={{ color: "red" }}>
+                  <ul>
+                    {errorMessages.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <form method="post" action="" onSubmit={handleLogin}>
                 <div class="form-group mb-3">
-                  <label>Email</label>
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
                   <input
-                    class="form-control"
                     type="text"
-                    name="username"
-                  ></input>
+                    id="email"
+                    className="form-control"
+                    name="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div class="form-group mb-3">
-                  <label>Password</label>
+                  <label htmlFor="Password" className="form-label">
+                    Password
+                  </label>
                   <input
-                    class="form-control"
-                    type="password"
+                    type="text"
+                    id="password"
+                    className="form-control"
                     name="password"
-                  ></input>
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
-                <button
+
+                <div className="col-sm-11" class="formcontainer">
+                  <label htmlFor="Usertype" className="form-label">
+                    Usertype
+                  </label>
+                  <select
+                    id="usertype"
+                    className="form-control"
+                    type="text"
+                    name="usertype"
+                    value={usertype}
+                    onChange={(e) => setUsertype(e.target.value)}
+                  >
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="MANAGER">MANAGER</option>
+                    <option value="EMPLOYEE">EMPLOYEE</option>
+                  </select>
+                </div>
+                <input
                   type="submit"
-                  name="login_user"
-                  class="btn btn-primary mb-3"
-                >
-                  Login
-                </button>
+                  class="btn btn-primary "
+                  value="Login"
+                  style={{ margin: "0 auto" }}
+                />
 
                 <p>
                   Not yet a member? <a href="/Registration">Register Here</a>

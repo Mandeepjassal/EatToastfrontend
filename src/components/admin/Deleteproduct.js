@@ -8,6 +8,23 @@ import { FETCH_PRODUCT_BY_ID } from "../../graphql/FetchProductById";
 import { UPDATE_PRODUCT_BY_ID } from "../../graphql/UpdateProductById";
 import { DELETE_PRODUCT_BY_ID } from "../../graphql/DeleteProductById";
 function Deleteproduct() {
+  const [showCategorySubMenu, setShowCategorySubMenu] = useState(false);
+  const [showItemsSubMenu, setShowItemsSubMenu] = useState(false);
+  const [showOrdersSubMenu, setShowOrdersSubMenu] = useState(false);
+
+  const handleManageCategoryClick = (event) => {
+    event.preventDefault();
+    setShowCategorySubMenu(!showCategorySubMenu);
+  };
+
+  const handleManageItemsClick = (event) => {
+    event.preventDefault();
+    setShowItemsSubMenu(!showItemsSubMenu);
+  };
+  const handleManageOrdersClick = (event) => {
+    event.preventDefault();
+    setShowOrdersSubMenu(!showOrdersSubMenu);
+  };
   const navigate = useNavigate();
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState(0);
@@ -82,59 +99,74 @@ function Deleteproduct() {
                 </span>
               </a>
             </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
+            <li className="manage-category">
+              <a href="#" onClick={handleManageCategoryClick}>
+                <span className="icon">
                   <ion-icon name="fast-food-outline"></ion-icon>
                 </span>
-                <span class="title">
-                  <a href="/Addcategory">Add Category</a>
-                </span>
+                <span className="title">Manage Category</span>
               </a>
             </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
+            {showCategorySubMenu && (
+              <>
+                <ul>
+                  <li>
+                    <a href="/Addcategory">
+                      <span className="title">Add Category</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/Viewcategory">
+                      <span className="title">View Category</span>
+                    </a>
+                  </li>
+                </ul>
+              </>
+            )}
+            <li className="manage-items">
+              <a href="#" onClick={handleManageItemsClick}>
+                <span className="icon">
                   <ion-icon name="restaurant"></ion-icon>
                 </span>
-                <span class="title">
-                  <a href="/Additems">Add Items</a>
-                </span>
+                <span className="title">Manage Items</span>
               </a>
             </li>
-
-            <li>
-              <a href="#">
-                <span class="icon">
-                  <ion-icon name="eye-outline"></ion-icon>
-                </span>
-                <span class="title">
-                  <a href="/Viewproduct">View Product</a>
-                </span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <span class="icon">
-                  <ion-icon name="eye-outline"></ion-icon>
-                </span>
-                <span class="title">
-                  <a href="/Viewcategory">View Categories</a>
-                </span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <span class="icon">
+            {showItemsSubMenu && (
+              <>
+                <ul>
+                  <li>
+                    <a href="/Additems">
+                      <span className="title">Add Items</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/Viewproduct">
+                      <span className="title">View Product</span>
+                    </a>
+                  </li>
+                </ul>
+              </>
+            )}
+            <li className="manage-orders">
+              <a href="#" onClick={handleManageOrdersClick}>
+                <span className="icon">
                   <ion-icon name="cart-outline"></ion-icon>
                 </span>
-                <span class="title">
-                  <a href="/Vieworders">View Order</a>
-                </span>
+                <span className="title">Manage Orders</span>
               </a>
             </li>
+            {showOrdersSubMenu && (
+              <>
+                <ul>
+                  <li>
+                    <a href="/Vieworders">
+                      {" "}
+                      <span className="title">View Order</span>
+                    </a>
+                  </li>
+                </ul>
+              </>
+            )}
 
             <li>
               <a href="#">

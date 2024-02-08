@@ -176,7 +176,10 @@ body {
   justify-content: space-between;
   align-items: flex-start;
 }
-
+.latestOrder.nopage {
+  align-content: center;
+  justify-content: space-evenly;
+}
 .cardHeader h2 {
   font-weight: 600;
   color: var(--blue);
