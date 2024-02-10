@@ -14,7 +14,7 @@ import Viewcategory from "./components/admin/Viewcategory";
 import Index from "./components/user/Index";
 import Upadatecategory from "./components/admin/Upadatecategory";
 import Deletecategory from "./components/admin/Deletecategory";
-
+import Logout from "./components/admin/Logout";
 import Updateproduct from "./components/admin/Updateproduct";
 import Deleteproduct from "./components/admin/Deleteproduct";
 import NoPage from "./components/admin/NoPage";
@@ -28,6 +28,7 @@ function App() {
         </Route>
 
         <Route path="Login" element={<Login />} />
+        <Route path="Logout" element={<Logout />} />
         <Route path="Registration" element={<Registration />} />
         <Route path="Dashboard" element={<Dashboard />} />
         <Route path="Addcategory" element={<Addcategory />} />

@@ -108,14 +108,23 @@ function Dashboard() {
                   </ul>
                 </>
               )}
-
               <li>
                 <a href="#">
                   <span class="icon">
                     <ion-icon name="exit-outline"></ion-icon>
                   </span>
                   <span class="title">
-                    <a href="/Login">Log out</a>
+                    <a href="/Login">Login</a>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <span class="icon">
+                    <ion-icon name="exit-outline"></ion-icon>
+                  </span>
+                  <span class="title">
+                    <a href="/Logout">Log out</a>
                   </span>
                 </a>
               </li>
